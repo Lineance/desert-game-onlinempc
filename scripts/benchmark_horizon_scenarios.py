@@ -30,6 +30,8 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--horizons", type=int, nargs="+", required=True)
     parser.add_argument("--scenarios", type=int, nargs="+", required=True)
+    parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--solver-threads", type=int, default=1)
     parser.add_argument("--init-water", type=int, default=None)
     parser.add_argument("--init-food", type=int, default=None)
     args = parser.parse_args()
@@ -47,6 +49,8 @@ def main() -> None:
         base_seed=args.seed,
         init_water=init_water,
         init_food=init_food,
+        workers=max(1, args.workers),
+        solver_threads=max(1, args.solver_threads),
     )
 
     out_dir = os.path.join(ROOT, "outputs", "benchmarks", "raw")
@@ -57,6 +61,9 @@ def main() -> None:
     pd.DataFrame(records).to_csv(out_path, index=False)
     print(f"Saved benchmark records: {out_path}")
     print(f"rows={len(records)}")
+    print(
+        f"workers={max(1, args.workers)}, solver_threads={max(1, args.solver_threads)}"
+    )
 
 
 if __name__ == "__main__":

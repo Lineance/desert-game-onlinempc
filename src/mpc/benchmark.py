@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict, dataclass
 from time import perf_counter
 from typing import Dict, Iterable, List
@@ -40,6 +42,20 @@ class AggregateMetrics:
     mean_infeasible_rate: float
 
 
+@dataclass
+class EpisodeTask:
+    cfg: GameConfig
+    level_name: str
+    horizon: int
+    n_scenarios: int
+    episode: int
+    weather_sequence: List[int]
+    init_water: int
+    init_food: int
+    predictor_seed: int
+    solver_threads: int
+
+
 def sample_weather_sequence(
     transition: np.ndarray,
     num_days: int,
@@ -64,6 +80,7 @@ def run_online_episode(
     init_water: int,
     init_food: int,
     predictor_seed: int,
+    solver_threads: int = 1,
 ) -> EpisodeMetrics:
     init_money = (
         cfg.init_money - cfg.water_price * init_water - cfg.food_price * init_food
@@ -78,7 +95,13 @@ def run_online_episode(
     )
 
     predictor = MarkovWeatherPredictor(cfg.weather_transition, rng_seed=predictor_seed)
-    mpc = OnlineMPC(cfg, horizon=horizon, n_scenarios=n_scenarios, predictor=predictor)
+    mpc = OnlineMPC(
+        cfg,
+        horizon=horizon,
+        n_scenarios=n_scenarios,
+        predictor=predictor,
+        solver_threads=solver_threads,
+    )
 
     step_times: List[float] = []
     infeasible_steps = 0
@@ -142,6 +165,26 @@ def run_online_episode(
     )
 
 
+def _run_task(task: EpisodeTask) -> Dict[str, object]:
+    os.environ["OMP_NUM_THREADS"] = str(task.solver_threads)
+    os.environ["MKL_NUM_THREADS"] = str(task.solver_threads)
+    os.environ["OPENBLAS_NUM_THREADS"] = str(task.solver_threads)
+
+    metrics = run_online_episode(
+        cfg=task.cfg,
+        level_name=task.level_name,
+        horizon=task.horizon,
+        n_scenarios=task.n_scenarios,
+        episode=task.episode,
+        weather_sequence=task.weather_sequence,
+        init_water=task.init_water,
+        init_food=task.init_food,
+        predictor_seed=task.predictor_seed,
+        solver_threads=task.solver_threads,
+    )
+    return asdict(metrics)
+
+
 def run_grid_benchmark(
     cfg: GameConfig,
     level_name: str,
@@ -152,8 +195,10 @@ def run_grid_benchmark(
     init_water: int,
     init_food: int,
     start_weather: int = Weather.SUNNY,
+    workers: int = 1,
+    solver_threads: int = 1,
 ) -> List[Dict[str, object]]:
-    records: List[Dict[str, object]] = []
+    tasks: List[EpisodeTask] = []
 
     for horizon in horizons:
         for n_scenarios in scenario_counts:
@@ -167,19 +212,38 @@ def run_grid_benchmark(
                     rng=weather_rng,
                     start_weather=start_weather,
                 )
-                metrics = run_online_episode(
-                    cfg=cfg,
-                    level_name=level_name,
-                    horizon=horizon,
-                    n_scenarios=n_scenarios,
-                    episode=episode,
-                    weather_sequence=weather_seq,
-                    init_water=init_water,
-                    init_food=init_food,
-                    predictor_seed=base_seed + episode,
+                tasks.append(
+                    EpisodeTask(
+                        cfg=cfg,
+                        level_name=level_name,
+                        horizon=horizon,
+                        n_scenarios=n_scenarios,
+                        episode=episode,
+                        weather_sequence=weather_seq,
+                        init_water=init_water,
+                        init_food=init_food,
+                        predictor_seed=base_seed + episode,
+                        solver_threads=solver_threads,
+                    )
                 )
-                records.append(asdict(metrics))
 
+    records: List[Dict[str, object]] = []
+    if workers <= 1:
+        for task in tasks:
+            records.append(_run_task(task))
+    else:
+        with ProcessPoolExecutor(max_workers=workers) as executor:
+            for row in executor.map(_run_task, tasks):
+                records.append(row)
+
+    records.sort(
+        key=lambda r: (
+            str(r["level"]),
+            int(r["horizon"]),
+            int(r["n_scenarios"]),
+            int(r["episode"]),
+        )
+    )
     return records
 
 

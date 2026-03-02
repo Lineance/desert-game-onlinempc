@@ -3,6 +3,8 @@ param(
     [string]$Level = "3",
     [int]$Episodes = 30,
     [int]$Seed = 42,
+    [int]$Workers = 13,
+    [int]$SolverThreads = 1,
     [switch]$CleanRaw
 )
 
@@ -53,6 +55,8 @@ if ($Level -eq "3" -or $Level -eq "both") {
         --level 3 `
         --episodes $Episodes `
         --seed $Seed `
+        --workers $Workers `
+        --solver-threads $SolverThreads `
         --horizons 2 4 6 8 10 `
         --scenarios 1 2 4 8
 }
@@ -63,6 +67,8 @@ if ($Level -eq "4" -or $Level -eq "both") {
         --level 4 `
         --episodes $Episodes `
         --seed ($Seed + 1000) `
+        --workers $Workers `
+        --solver-threads $SolverThreads `
         --horizons 4 8 12 16 20 30 `
         --scenarios 1 2 4 8 16
 }
@@ -74,6 +80,8 @@ Write-Host "[plot] generate figures"
 & $python (Join-Path $scriptDir "plot_benchmark.py") --summary $summaryFile --outdir $figDir
 
 Write-Host "Benchmark completed."
+Write-Host "- Workers: $Workers"
+Write-Host "- SolverThreads: $SolverThreads"
 Write-Host "- Raw:     $rawDir"
 Write-Host "- Filter:  $inputGlob"
 Write-Host "- Summary: $summaryFile"

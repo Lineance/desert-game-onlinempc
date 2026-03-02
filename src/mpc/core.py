@@ -80,12 +80,20 @@ class GameConfig:
 
 class OnlineMPC:
     def __init__(
-        self, cfg: GameConfig, horizon: int = 5, n_scenarios: int = 3, predictor=None
+        self,
+        cfg: GameConfig,
+        horizon: int = 5,
+        n_scenarios: int = 3,
+        predictor=None,
+        solver_threads: int = 1,
+        solver_time_limit: int = 30,
     ):
         self.cfg = cfg
         self.horizon = horizon
         self.n_scenarios = n_scenarios
         self.predictor = predictor or MarkovWeatherPredictor(cfg.weather_transition)
+        self.solver_threads = max(1, int(solver_threads))
+        self.solver_time_limit = max(1, int(solver_time_limit))
 
     def set_horizon(self, horizon: int) -> None:
         if horizon <= 0:
@@ -277,11 +285,21 @@ class OnlineMPC:
                 prob += buy_w[t_rel] <= big_m * (1 - r_prev)
                 prob += buy_f[t_rel] <= big_m * (1 - r_prev)
 
-        solver = pulp.HiGHS(msg=False, timeLimit=30)
+        solver = pulp.HiGHS(
+            msg=False,
+            timeLimit=self.solver_time_limit,
+            threads=self.solver_threads,
+        )
         try:
             prob.solve(solver)
         except Exception:
-            prob.solve(pulp.PULP_CBC_CMD(msg=False, timeLimit=30))
+            prob.solve(
+                pulp.PULP_CBC_CMD(
+                    msg=False,
+                    timeLimit=self.solver_time_limit,
+                    threads=self.solver_threads,
+                )
+            )
 
         if prob.status != pulp.LpStatusOptimal:
             return self._emergency_action(s), {"status": "infeasible", "horizon": H}

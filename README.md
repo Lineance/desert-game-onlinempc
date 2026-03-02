@@ -193,8 +193,13 @@ D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe -m pytest -q
 ### 11.1 跑批量实验（online 模式）
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\benchmark_horizon_scenarios.py --level 3 --episodes 20 --horizons 2 4 6 8 10 --scenarios 1 2 4 8 --seed 42
+D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\benchmark_horizon_scenarios.py --level 3 --episodes 20 --horizons 2 4 6 8 10 --scenarios 1 2 4 8 --workers 4 --solver-threads 1 --seed 42
 ```
+
+并行建议：
+
+- `--workers`：并行进程数（多 solver 并行）
+- `--solver-threads`：单 solver 线程数（建议固定为 `1`）
 
 原始结果输出到：
 
