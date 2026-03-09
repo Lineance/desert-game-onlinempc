@@ -14,9 +14,7 @@ from mpc.simulator import run_online_simulation
 @settings(max_examples=20, deadline=None)
 def test_online_loop_fuzz_level3(level3_cfg, init_water, init_food, horizon):
     solver = OnlineMPC(level3_cfg, horizon=horizon, n_scenarios=2)
-    weather_seq = [
-        Weather.SUNNY if i % 2 == 0 else Weather.HOT for i in range(level3_cfg.num_days)
-    ]
+    weather_seq = [Weather.SUNNY if i % 2 == 0 else Weather.HOT for i in range(level3_cfg.num_days)]
 
     result = run_online_simulation(
         cfg=level3_cfg,

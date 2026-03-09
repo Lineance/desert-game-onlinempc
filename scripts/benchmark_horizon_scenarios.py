@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 import argparse
 import os
 import sys
@@ -61,9 +62,7 @@ def main() -> None:
     pd.DataFrame(records).to_csv(out_path, index=False)
     print(f"Saved benchmark records: {out_path}")
     print(f"rows={len(records)}")
-    print(
-        f"workers={max(1, args.workers)}, solver_threads={max(1, args.solver_threads)}"
-    )
+    print(f"workers={max(1, args.workers)}, solver_threads={max(1, args.solver_threads)}")
 
 
 if __name__ == "__main__":

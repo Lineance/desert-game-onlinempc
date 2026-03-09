@@ -82,9 +82,7 @@ def run_online_episode(
     predictor_seed: int,
     solver_threads: int = 1,
 ) -> EpisodeMetrics:
-    init_money = (
-        cfg.init_money - cfg.water_price * init_water - cfg.food_price * init_food
-    )
+    init_money = cfg.init_money - cfg.water_price * init_water - cfg.food_price * init_food
     state = State(
         day=0,
         pos=cfg.start,
@@ -255,9 +253,7 @@ def aggregate_records(records: List[Dict[str, object]]) -> List[Dict[str, object
 
     outputs: List[Dict[str, object]] = []
     for (level, horizon, n_scenarios), rows in grouped.items():
-        success = np.array(
-            [1.0 if bool(r["success"]) else 0.0 for r in rows], dtype=float
-        )
+        success = np.array([1.0 if bool(r["success"]) else 0.0 for r in rows], dtype=float)
         final_money = np.array([float(r["final_money"]) for r in rows], dtype=float)
         avg_step = np.array([float(r["avg_step_time_ms"]) for r in rows], dtype=float)
         p95_step = np.array([float(r["p95_step_time_ms"]) for r in rows], dtype=float)

@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 import argparse
 import glob
 import os
@@ -23,9 +24,7 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=str,
-        default=os.path.join(
-            ROOT, "outputs", "benchmarks", "summary", "benchmark_summary.csv"
-        ),
+        default=os.path.join(ROOT, "outputs", "benchmarks", "summary", "benchmark_summary.csv"),
     )
     args = parser.parse_args()
 

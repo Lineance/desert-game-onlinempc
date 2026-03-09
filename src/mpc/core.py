@@ -176,15 +176,11 @@ class OnlineMPC:
                 prob += pulp.lpSum(loc[s_idx][t_rel][i] for i in Nodes) == 1
 
                 for j in Nodes:
-                    flow_in = pulp.lpSum(
-                        move[s_idx][t_rel][i][j] for i in cfg.neighbors[j]
-                    )
+                    flow_in = pulp.lpSum(move[s_idx][t_rel][i][j] for i in cfg.neighbors[j])
                     prob += loc[s_idx][t_rel][j] == stay[s_idx][t_rel][j] + flow_in
 
                 for i in Nodes:
-                    flow_out = pulp.lpSum(
-                        move[s_idx][t_rel][i][j] for j in cfg.neighbors[i]
-                    )
+                    flow_out = pulp.lpSum(move[s_idx][t_rel][i][j] for j in cfg.neighbors[i])
                     prob += loc[s_idx][t_rel - 1][i] == stay[s_idx][t_rel][i] + flow_out
 
                 total_stay = pulp.lpSum(stay[s_idx][t_rel][i] for i in Nodes)
@@ -212,8 +208,7 @@ class OnlineMPC:
                     prob += buy_f[t_rel] == 0
 
                 purchase_cost = (
-                    2 * cfg.water_price * buy_w[t_rel]
-                    + 2 * cfg.food_price * buy_f[t_rel]
+                    2 * cfg.water_price * buy_w[t_rel] + 2 * cfg.food_price * buy_f[t_rel]
                 )
                 prob += purchase_cost <= money[s_idx][t_rel - 1]
 
@@ -259,22 +254,19 @@ class OnlineMPC:
                 )
 
                 prob += (
-                    cfg.water_weight * water[s_idx][t_rel]
-                    + cfg.food_weight * food[s_idx][t_rel]
+                    cfg.water_weight * water[s_idx][t_rel] + cfg.food_weight * food[s_idx][t_rel]
                     <= cfg.weight_limit
                 )
 
                 mine_revenue = cfg.mine_income * mine[s_idx][t_rel]
                 prob += (
-                    money[s_idx][t_rel]
-                    == money[s_idx][t_rel - 1] + mine_revenue - purchase_cost
+                    money[s_idx][t_rel] == money[s_idx][t_rel - 1] + mine_revenue - purchase_cost
                 )
 
                 prob += reached[s_idx][t_rel] >= loc[s_idx][t_rel][cfg.end]
                 prob += reached[s_idx][t_rel] >= reached[s_idx][t_rel - 1]
                 prob += (
-                    reached[s_idx][t_rel]
-                    <= loc[s_idx][t_rel][cfg.end] + reached[s_idx][t_rel - 1]
+                    reached[s_idx][t_rel] <= loc[s_idx][t_rel][cfg.end] + reached[s_idx][t_rel - 1]
                 )
 
                 for i in Nodes:

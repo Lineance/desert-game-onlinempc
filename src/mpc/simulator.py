@@ -12,9 +12,7 @@ class SimulationResult:
     trace: List[Dict[str, object]]
 
 
-def apply_action(
-    cfg: GameConfig, state: State, action: Action, weather_today: int
-) -> State:
+def apply_action(cfg: GameConfig, state: State, action: Action, weather_today: int) -> State:
     next_pos = state.pos
     moved = False
     if (

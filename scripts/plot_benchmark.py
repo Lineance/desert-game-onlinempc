@@ -13,9 +13,7 @@ def main() -> None:
     args = parser.parse_args()
 
     summary = pd.read_csv(args.summary)
-    outdir = args.outdir or os.path.join(
-        os.path.dirname(os.path.dirname(args.summary)), "figures"
-    )
+    outdir = args.outdir or os.path.join(os.path.dirname(os.path.dirname(args.summary)), "figures")
     os.makedirs(outdir, exist_ok=True)
 
     sns.set_theme(style="whitegrid")
@@ -23,21 +21,15 @@ def main() -> None:
     for level in sorted(summary["level"].unique()):
         sub = summary[summary["level"] == level].copy()
 
-        heat_money = sub.pivot(
-            index="horizon", columns="n_scenarios", values="mean_final_money"
-        )
+        heat_money = sub.pivot(index="horizon", columns="n_scenarios", values="mean_final_money")
         plt.figure(figsize=(8, 5))
         sns.heatmap(heat_money, annot=True, fmt=".1f", cmap="YlGnBu")
         plt.title(f"{level}: Mean Final Money")
         plt.tight_layout()
-        plt.savefig(
-            os.path.join(outdir, f"{level}_mean_final_money_heatmap.png"), dpi=150
-        )
+        plt.savefig(os.path.join(outdir, f"{level}_mean_final_money_heatmap.png"), dpi=150)
         plt.close()
 
-        heat_success = sub.pivot(
-            index="horizon", columns="n_scenarios", values="success_rate"
-        )
+        heat_success = sub.pivot(index="horizon", columns="n_scenarios", values="success_rate")
         plt.figure(figsize=(8, 5))
         sns.heatmap(heat_success, annot=True, fmt=".2f", cmap="YlOrRd", vmin=0, vmax=1)
         plt.title(f"{level}: Success Rate")

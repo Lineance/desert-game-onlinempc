@@ -9,6 +9,7 @@ import pulp
 
 from mpc.core import GameConfig, OnlineMPC, State
 from mpc.predictor import DeterministicWeatherPredictor
+from mpc.simulator import run_online_simulation
 from oracle import solve_offline_oracle
 
 
@@ -91,9 +92,7 @@ def _load_tool_module(tool_name: str):
 
 def _build_cfg_from_tool_module(module) -> GameConfig:
     mines = list(module.MINES) if hasattr(module, "MINES") else [module.MINE]
-    villages = (
-        list(module.VILLAGES) if hasattr(module, "VILLAGES") else [module.VILLAGE]
-    )
+    villages = list(module.VILLAGES) if hasattr(module, "VILLAGES") else [module.VILLAGE]
 
     class ToolLevelConfig:
         NUM_NODES = module.NUM_NODES
@@ -126,9 +125,7 @@ def _build_cfg_from_tool_module(module) -> GameConfig:
     return GameConfig.from_level(ToolLevelConfig, base_consumption=base_consumption)
 
 
-def _solve_tool_reference(
-    module, time_limit: int = 120
-) -> Dict[str, float | str | int]:
+def _solve_tool_reference(module, time_limit: int = 120) -> Dict[str, float | str | int]:
     prob, v, _ = module.build_model()
     solver = pulp.HiGHS(msg=False, timeLimit=time_limit)
     try:
@@ -158,15 +155,11 @@ def compare_solver_with_tool_reference(
     weather_seq = [int(w) - 1 for w in module.WEATHER]
 
     predictor = DeterministicWeatherPredictor(weather_seq)
-    offline_mpc = OnlineMPC(
-        cfg, horizon=cfg.num_days, n_scenarios=1, predictor=predictor
-    )
+    offline_mpc = OnlineMPC(cfg, horizon=cfg.num_days, n_scenarios=1, predictor=predictor)
 
     init_water = int(ref["init_water"])
     init_food = int(ref["init_food"])
-    init_money = (
-        cfg.init_money - cfg.water_price * init_water - cfg.food_price * init_food
-    )
+    init_money = cfg.init_money - cfg.water_price * init_water - cfg.food_price * init_food
     init_state = State(
         day=0,
         pos=cfg.start,

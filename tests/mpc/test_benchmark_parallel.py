@@ -56,7 +56,7 @@ def test_benchmark_parallel_consistency(level3_cfg):
         "final_money",
         "end_day",
     ]
-    for s, p in zip(serial, parallel):
+    for s, p in zip(serial, parallel, strict=True):
         for key in key_fields:
             if key == "final_money":
                 assert p[key] == pytest.approx(s[key], abs=1e-6)

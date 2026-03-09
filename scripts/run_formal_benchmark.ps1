@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root = Split-Path -Parent $scriptDir
-$python = "D:/MainFolder/Desktop/SRTP/task2/.venv/Scripts/python.exe"
+$python = "uv run"
 
 $rawDir = Join-Path $root "outputs/benchmarks/raw"
 
@@ -28,10 +28,6 @@ if ($Level -eq "both") {
     $summaryFile = Join-Path $root "outputs/benchmarks/summary/benchmark_summary_level4.csv"
     $figDir = Join-Path $root "outputs/benchmarks/figures/level4"
     $inputGlob = Join-Path $rawDir "level4_benchmark_*.csv"
-}
-
-if (-not (Test-Path $python)) {
-    throw "Python executable not found: $python"
 }
 
 if ($CleanRaw) {

@@ -68,7 +68,7 @@ Windows 下进入项目并运行（PowerShell）：
 
 ```powershell
 cd D:\MainFolder\Desktop\SRTP\task2-onlinempc
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe -V
+uv run -V
 ```
 
 ---
@@ -78,7 +78,7 @@ D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe -V
 ### 4.1 运行 Level3（在线 MPC）
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\run_level3.py --horizon 4 --scenarios 3 --init-water 180 --init-food 180
+uv run scripts\run_level3.py --horizon 4 --scenarios 3 --init-water 180 --init-food 180
 ```
 
 结果输出到：
@@ -88,7 +88,7 @@ D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\run_level3.py 
 ### 4.2 运行 Level4（在线 MPC）
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\run_level4.py --horizon 8 --scenarios 5 --init-water 220 --init-food 220
+uv run scripts\run_level4.py --horizon 8 --scenarios 5 --init-water 220 --init-food 220
 ```
 
 ---
@@ -119,10 +119,10 @@ D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\run_level4.py 
 运行示例：
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe examples\level3_local_horizon.py
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe examples\level3_global_horizon.py
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe examples\level4_local_horizon.py
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe examples\level4_global_horizon.py
+uv run examples\level3_local_horizon.py
+uv run examples\level3_global_horizon.py
+uv run examples\level4_local_horizon.py
+uv run examples\level4_global_horizon.py
 ```
 
 ---
@@ -132,19 +132,19 @@ D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe examples\level4_global
 ### 7.1 只跑 MPC 测试
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe -m pytest -q tests\mpc
+uv run -m pytest -q tests\mpc
 ```
 
 ### 7.2 跑退化一致性测试（Level3/4 退化到 Level1/2）
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe -m pytest -q tests\test_level34_degenerate_level1_level2.py
+uv run -m pytest -q tests\test_level34_degenerate_level1_level2.py
 ```
 
 ### 7.3 全量测试（可选）
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe -m pytest -q
+uv run -m pytest -q
 ```
 
 ---
@@ -193,7 +193,7 @@ D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe -m pytest -q
 ### 11.1 跑批量实验（online 模式）
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\benchmark_horizon_scenarios.py --level 3 --episodes 20 --horizons 2 4 6 8 10 --scenarios 1 2 4 8 --workers 4 --solver-threads 1 --seed 42
+uv run scripts\benchmark_horizon_scenarios.py --level 3 --episodes 20 --horizons 2 4 6 8 10 --scenarios 1 2 4 8 --workers 4 --solver-threads 1 --seed 42
 ```
 
 并行建议：
@@ -208,7 +208,7 @@ D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\benchmark_hori
 ### 11.2 统计汇总
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\summarize_benchmark.py
+uv run scripts\summarize_benchmark.py
 ```
 
 汇总输出到：
@@ -218,7 +218,7 @@ D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\summarize_benc
 ### 11.3 绘图（matplotlib + seaborn）
 
 ```powershell
-D:\MainFolder\Desktop\SRTP\task2\.venv\Scripts\python.exe scripts\plot_benchmark.py --summary outputs/benchmarks/summary/benchmark_summary.csv
+uv run scripts\plot_benchmark.py --summary outputs/benchmarks/summary/benchmark_summary.csv
 ```
 
 图表输出到：

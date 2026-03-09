@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from mpc.core import GameConfig, OnlineMPC, State
+from mpc.core import GameConfig, OnlineMPC
 from mpc.predictor import DeterministicWeatherPredictor
 from mpc.simulator import run_online_simulation
 

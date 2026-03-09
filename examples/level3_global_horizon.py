@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 import os
 import sys
 
@@ -15,9 +16,7 @@ def main() -> None:
     cfg = GameConfig.from_level(Level3Config)
     solver = OnlineMPC(cfg, horizon=cfg.num_days, n_scenarios=1)
 
-    weather_seq = [
-        Weather.SUNNY if i % 2 == 0 else Weather.HOT for i in range(cfg.num_days)
-    ]
+    weather_seq = [Weather.SUNNY if i % 2 == 0 else Weather.HOT for i in range(cfg.num_days)]
     result = run_online_simulation(
         cfg=cfg,
         mpc=solver,
