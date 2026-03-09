@@ -60,14 +60,10 @@ task2-onlinempc/
 
 ## 3. 环境与依赖
 
-复用现有虚拟环境：
-
-- `D:\MainFolder\Desktop\SRTP\task2\.venv`
-
 Windows 下进入项目并运行（PowerShell）：
 
 ```powershell
-cd D:\MainFolder\Desktop\SRTP\task2-onlinempc
+uv sync
 uv run -V
 ```
 
